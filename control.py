@@ -111,12 +111,20 @@ def get_pwm_arm_input():
     elif keys[pygame.K_q]: 
         elbow_pwm = 0 # press Q to move elbow down
 
-    if keys[pygame.K_r]: # motor 4 in arm
+    if keys[pygame.K_r]: # motor 4 in arm 
         wristright_pwm = 255 # wrist left being neutral and wrist right being forward leads to clockwise motion
         wristleft_pwm = 128 #press R to move clockwise
-    elif keys[pygame.K_f]: # motor 5 in arm
+    elif keys[pygame.K_f]: 
         wristright_pwm = 128 #wrist right being neutral and wrist left being forward leads to counterclockwise motion
         wristleft_pwm = 255 #press F to move counterclockwise
+
+        # motor 5 in arm New keyboard inputs for wrist left 
+    if keys[pygame.K_z]: # Move wrist left clockwise
+        wristleft_pwm = 255
+        wristright_pwm = 128
+    elif keys[pygame.K_x]: # Move wrist left anticlockwise
+        wristleft_pwm = 128
+        wristright_pwm = 255
 
     if keys[pygame.K_g]: # motor 6 in arm
         shoulder_pwm = 255 #press G to spin shoulder clockwise 
@@ -126,15 +134,36 @@ def get_pwm_arm_input():
     # Handle joystick input for arm (example: buttons control movement)
     if pygame.joystick.get_count() > 0:
         # Note: currently dont have a controller so idk which button does what LOL
-        if joystick.get_button(0):  # Press Button 0 to move gantry up
-            gantry_pwm = 255 
-        elif joystick.get_button(1):  # Press Button 1 to move gantry down
-            gantry_pwm = 0
-
-        if joystick.get_button(2):  # Press Button 2 to open claw
-            claw_pwm = 255
-        elif joystick.get_button(3):  # Press Button 3 to close claw
+        if joystick.get_button(0):  # Press Button A to move claw up
+            claw_pwm = 255 
+        elif joystick.get_button(1):  # Press Button B to move claw down
             claw_pwm = 0
+
+        if joystick.get_button(2):  # Press Button 2 to open shoulder
+            shoulder_pwm = 255
+        elif joystick.get_button(3):  # Press Button 3 to close shoulder
+            shoulder_pwm = 0
+
+        if joystick.get_button(4):  # LB to move wrist left clockwise
+            wristright_pwm = 128
+            wristleft_pwm = 255
+
+        elif joystick.get_button(5):  # RB to move wrist right clockwise
+            wristright_pwm = 255
+            wristleft_pwm = 128
+
+        if joystick.get_button(6):  # LT to move wrist left counterclockwise
+            wristright_pwm = 255
+            wristleft_pwm = 128
+
+        elif joystick.get_button(7):  # RT to move wrist right counterclockwise
+            wristleft_pwm = 255
+            wristright_pwm = 128
+
+ # Joystick axis inputs
+        gantry_pwm = 255 if joystick.get_axis(5) < -0.1 else 0 if joystick.get_axis(5) > 0.1 else 128
+        elbow_pwm = 255 if joystick.get_axis(4) < -0.1 else 0 if joystick.get_axis(4) > 0.1 else 128
+
 
     return shoulder_pwm, wristright_pwm, wristleft_pwm, claw_pwm, gantry_pwm, elbow_pwm
 
@@ -202,3 +231,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+#why is this actually fun xD
+#Note: still no controller implemented.
