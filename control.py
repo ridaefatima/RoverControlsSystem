@@ -20,16 +20,19 @@ if pygame.joystick.get_count() > 0:
 
 # Function that creates the drive packet
 def create_drive_packet(right_wheel_pwms, left_wheel_pwms):
+    #this is the ORDER that the drive packet will be printed in.
     return f"D_{right_wheel_pwms[0]}_{right_wheel_pwms[1]}_{right_wheel_pwms[2]}_{left_wheel_pwms[0]}_{left_wheel_pwms[1]}_{left_wheel_pwms[2]}"
 
 # Function that creates the arm packet
 def create_arm_packet(shoulder_pwm, wristright_pwm, wristleft_pwm, claw_pwm, gantry_pwm, elbow_pwm):
+    #this is the ORDER that the arm packet will be printed in.
     return f"A_{elbow_pwm}_{wristright_pwm}_{wristleft_pwm}_{claw_pwm}_{gantry_pwm}_{shoulder_pwm}"
 
 # Function that sends the packets to the rover
 def send_packet(packet):
     rover_socket.sendto(packet.encode('utf-8'), (ROVER_IP, ROVER_PORT))
-    print(f"Sent packet: {packet}")
+    
+    print(f"Sent packet: {packet}") # prints all the packets
 
 # Function to handle key/joystick inputs for drive
 def get_pwm_drive_input():
