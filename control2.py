@@ -1,7 +1,6 @@
 import socket
 import pygame
 
-
 DEADZONE = 0.1
 
 # Rover details
@@ -21,6 +20,7 @@ pygame.joystick.init()
 def noop():
     """A no-op function that does nothing."""
     pass
+
 def check_joystick():
     """Check if a joystick is connected.""" 
     if pygame.joystick.get_count() > 0:
@@ -55,7 +55,7 @@ def apply_deadzone(value):
     """Apply a deadzone to joystick input.""" 
     return value if abs(value) > DEADZONE else 0
 
-def get_pwm_drive_input(joystick=None):
+def get_pwm_drive_input(joystick=None, forward_speed=148, reverse_speed=108):
     """Get PWM values for driving based on joystick input.""" 
     left_wheel_pwm = [128, 128, 128]
     right_wheel_pwm = [128, 128, 128]
@@ -65,24 +65,25 @@ def get_pwm_drive_input(joystick=None):
         left_right = apply_deadzone(joystick.get_axis(0))
 
         if forward_backward < -DEADZONE:
-            left_wheel_pwm = [255, 255, 255]
-            right_wheel_pwm = [255, 255, 255]
+            left_wheel_pwm = [forward_speed, forward_speed, forward_speed]
+            right_wheel_pwm = [forward_speed, forward_speed, forward_speed]
         elif forward_backward > DEADZONE:
-            left_wheel_pwm = [0, 0, 0]
-            right_wheel_pwm = [0, 0, 0]
+            left_wheel_pwm = [reverse_speed, reverse_speed, reverse_speed]
+            right_wheel_pwm = [reverse_speed, reverse_speed, reverse_speed]
 
         if left_right < -DEADZONE:
-            left_wheel_pwm = [0, 0, 0]
-            right_wheel_pwm = [255, 255, 255]
+            # Turn left (reverse left wheel, forward right wheel)
+            left_wheel_pwm = [reverse_speed, reverse_speed, reverse_speed]
+            right_wheel_pwm = [forward_speed, forward_speed, forward_speed]
+            # Turn right (forward left wheel, reverse right wheel)
         elif left_right > DEADZONE:
-            left_wheel_pwm = [255, 255, 255]
-            right_wheel_pwm = [0, 0, 0]
+            left_wheel_pwm = [forward_speed, forward_speed, forward_speed]
+            right_wheel_pwm = [reverse_speed, reverse_speed, reverse_speed]
 
     return left_wheel_pwm, right_wheel_pwm
 
 def get_pwm_arm_input(joystick=None):
     """Get PWM values for the arm based on joystick input.""" 
-    # Default PWM values
     shoulder_pwm = 128
     wristright_pwm = 128
     wristleft_pwm = 128
@@ -90,66 +91,39 @@ def get_pwm_arm_input(joystick=None):
     gantry_pwm = 128
     elbow_pwm = 128
 
-    if joystick: #WORKS
-        # Update PWM values based on joystick input
+    if joystick:
         if joystick.get_button(0): 
-            claw_pwm = 255 #x opens claw
+            claw_pwm = 148  # X Opens claw
         elif joystick.get_button(1): 
-            claw_pwm = 0  #o closes claw
+            claw_pwm = 108  # O Closes claw
 
         if joystick.get_button(2):
-            shoulder_pwm = 255  #square shoulder clockwise
+            shoulder_pwm = 148  #  shoulder moves clockwise
         elif joystick.get_button(3):
-             #triangle shoulder anticlockwise
-            shoulder_pwm = 0   
+            shoulder_pwm = 108  #  shoulder moves anticlockwise
 
-        if joystick.get_button(4): 
-           noop()   #lb
-            
-        elif joystick.get_button(5):
-         noop() #rb
+        hat = joystick.get_hat(0)  # Get Direction pad input
+        if hat == (0, 1):  # UP direction on Direction Pad, moves gantry up
+            wristright_pwm = 148
+            wristleft_pwm = 108
+        elif hat == (0, -1):  # DOWN direction on Direction Pad, moves gantry down
+            wristright_pwm = 108
+            wristleft_pwm = 148
+        if hat == (-1, 0):  # LEFT direction on Direction Pad, 
+            wristright_pwm = 108  #claw spins anticlockwise
+            wristleft_pwm = 108
+        if hat == (1, 0):  # RIGHT direction on Direction Pad
+            wristright_pwm = 148  #  claw spins clockwise
+            wristleft_pwm = 148
 
-        if joystick.get_button(6):
-           noop() #back
-        elif joystick.get_button(7):
-            noop() #front
-        if joystick.get_button(8):
-            noop()
-        elif joystick.get_button(9):
-            wristright_pwm = 255
-            wristleft_pwm = 0
-
-        if joystick.get_button(10):
-            noop()
-            # right up left down moves claw up (direction pad UP)
-        
-        hat = joystick.get_hat(0)  # Get D-pad input
-        if hat == (0, 1):  # D-pad Up
-            # Move claw up
-            wristright_pwm = 255
-            wristleft_pwm = 0
-
-        elif hat == (0, -1):  # D-pad Down
-            # Move claw down
-            wristright_pwm = 0
-            wristleft_pwm = 255
-
-        if hat == (-1, 0):  # D-pad Left 
-            wristright_pwm = 0 #spin claw anticlockwise
-            wristleft_pwm = 0
-
-        if hat == (1, 0):  # D-pad right 
-            wristright_pwm = 255 #spin claw clockwise
-            wristleft_pwm = 255
-        
-
-        gantry_pwm = 255 if joystick.get_axis(3) < -DEADZONE else 0 if joystick.get_axis(3) > DEADZONE else 128 #gantry moves up and down using right joystick's y axis
-        elbow_pwm = 255 if joystick.get_axis(2) < -DEADZONE else 0 if joystick.get_axis(2) > DEADZONE else 128 #elbow moves on right joystick's x axis.
+        gantry_pwm = 148 if joystick.get_axis(3) < -DEADZONE else 108 if joystick.get_axis(3) > DEADZONE else 128 #gantry up/down
+        elbow_pwm = 108 if joystick.get_axis(2) < -DEADZONE else 148 if joystick.get_axis(2) > DEADZONE else 128  #elbow moves up/down
 
     return shoulder_pwm, wristright_pwm, wristleft_pwm, claw_pwm, gantry_pwm, elbow_pwm
 
+#Shows is joystick is connected or not
 def main():
-    """Main function to run the rover control application.""" 
+    """Main function to run the rover control application."""
     running = True
     joystick = check_joystick()
     if joystick:
@@ -159,9 +133,16 @@ def main():
 
     clock = pygame.time.Clock()
 
+    # Initialize forward and reverse speed variables
+    forward_speed = 148
+    reverse_speed = 108
+    button_4_pressed = False  # Track button 4 state
+    button_5_pressed = False  # Track button 5 state
+
     prev_left_wheel_pwm = [128, 128, 128]
     prev_right_wheel_pwm = [128, 128, 128]
 
+    # Initialize previous arm PWM values
     prev_shoulder_pwm = 128
     prev_wristright_pwm = 128
     prev_wristleft_pwm = 128
@@ -175,7 +156,36 @@ def main():
                 if event.type == pygame.QUIT:
                     running = False
 
-            left_wheel_pwm, right_wheel_pwm = get_pwm_drive_input(joystick)
+            if joystick:
+                current_button_4_state = joystick.get_button(4)  # Get the current state of button 4
+                current_button_5_state = joystick.get_button(5)  # Get the current state of button 5
+
+                # Logic for button 4
+                if current_button_4_state and not button_4_pressed:  # Button 4 pressed
+                    # Increment forward speed by 20 and decrement reverse speed by 20
+                    if forward_speed < 255:
+                        forward_speed = min(255, forward_speed + 20)
+                    if reverse_speed > 0:
+                        reverse_speed = max(0, reverse_speed - 20)
+                    button_4_pressed = True  #  button 4  pressed
+
+                if not current_button_4_state:  # Button 4 released
+                    button_4_pressed = False  # button 4  released
+
+                # Logic for button 5
+                if current_button_5_state and not button_5_pressed:  # Button 5 pressed
+                    # Decrement forward speed by 20 and increment reverse speed by 20
+                    if forward_speed > 148:
+                        forward_speed = max(148, forward_speed - 20)
+                    if reverse_speed < 108:
+                        reverse_speed = min(108, reverse_speed + 20)
+                    button_5_pressed = True  # Mark button 5 as pressed
+
+                if not current_button_5_state:  # Button 5 released
+                    button_5_pressed = False  # Mark button 5 as released
+
+            # Decide the current speed based on joystick input
+            left_wheel_pwm, right_wheel_pwm = get_pwm_drive_input(joystick, forward_speed, reverse_speed)
             if left_wheel_pwm != prev_left_wheel_pwm or right_wheel_pwm != prev_right_wheel_pwm:
                 drive_packet = create_drive_packet(right_wheel_pwm, left_wheel_pwm)
                 send_packet(drive_packet)
