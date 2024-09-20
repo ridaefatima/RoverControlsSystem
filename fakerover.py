@@ -4,7 +4,7 @@ import socket
 ROVER_PORT = 12345
 
 def start_mock_server():
-    # Create a UDP socket
+    # UDP socket
     #Used due to UDP being better for practical applications as well as being able to handle more commands.
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.bind(('', ROVER_PORT))

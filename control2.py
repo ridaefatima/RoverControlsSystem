@@ -5,7 +5,7 @@ import pygame
 DEADZONE = 0.1
 
 # Rover details
-ROVER_IP = '192.168.1.100'  # Replace with the actual IP address of rover
+ROVER_IP = '192.168.1.100'  # Replace with the actual IP ADDRESS of rover
 ROVER_PORT = 12345  # Replace with the actual PORT of rover
 
 # Initialize socket
@@ -104,48 +104,47 @@ def get_pwm_arm_input(joystick=None):
             shoulder_pwm = 0   
 
         if joystick.get_button(4): 
-              noop() #share
+           noop()   #lb
             
         elif joystick.get_button(5):
-         noop() #ps
+         noop() #rb
 
         if joystick.get_button(6):
-          noop() #options
+           noop() #back
         elif joystick.get_button(7):
-           noop()
+            noop() #front
         if joystick.get_button(8):
-           noop()
-        elif joystick.get_button(9):
             noop()
+        elif joystick.get_button(9):
+            wristright_pwm = 255
+            wristleft_pwm = 0
 
         if joystick.get_button(10):
             noop()
             # right up left down moves claw up (direction pad UP)
-        elif joystick.get_button(11):
+        
+        hat = joystick.get_hat(0)  # Get D-pad input
+        if hat == (0, 1):  # D-pad Up
+            # Move claw up
             wristright_pwm = 255
             wristleft_pwm = 0
-             # right down left up moves claw DOWN (direction pad DOWN)
-        if joystick.get_button(12):
+
+        elif hat == (0, -1):  # D-pad Down
+            # Move claw down
             wristright_pwm = 0
             wristleft_pwm = 255
-# right and left both reverse claw spins anticlockwise (direction pad LEFT)
-        elif joystick.get_button(13):
-            wristright_pwm = 0
+
+        if hat == (-1, 0):  # D-pad Left 
+            wristright_pwm = 0 #spin claw anticlockwise
             wristleft_pwm = 0
-            # right and left both forward claw spins clockwise (direction pad RIGHT)
-        if joystick.get_button(14):
-            wristright_pwm = 255
+
+        if hat == (1, 0):  # D-pad right 
+            wristright_pwm = 255 #spin claw clockwise
             wristleft_pwm = 255
+        
 
-
-
-
-
-
-
-
-        gantry_pwm = 255 if joystick.get_axis(3) < -DEADZONE else 0 if joystick.get_axis(3) > DEADZONE else 128 #WORKS
-        elbow_pwm = 255 if joystick.get_axis(2) < -DEADZONE else 0 if joystick.get_axis(2) > DEADZONE else 128 #WORKS
+        gantry_pwm = 255 if joystick.get_axis(3) < -DEADZONE else 0 if joystick.get_axis(3) > DEADZONE else 128 #gantry moves up and down using right joystick's y axis
+        elbow_pwm = 255 if joystick.get_axis(2) < -DEADZONE else 0 if joystick.get_axis(2) > DEADZONE else 128 #elbow moves on right joystick's x axis.
 
     return shoulder_pwm, wristright_pwm, wristleft_pwm, claw_pwm, gantry_pwm, elbow_pwm
 
