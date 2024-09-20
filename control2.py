@@ -4,7 +4,7 @@ import pygame
 DEADZONE = 0.1
 
 # Rover details
-ROVER_IP = '192.168.1.100'  # Replace with the actual IP ADDRESS of rover
+ROVER_IP = '127.0.0.1'  # Replace with the actual IP ADDRESS of rover
 ROVER_PORT = 12345  # Replace with the actual PORT of rover
 
 # Initialize socket
@@ -49,7 +49,7 @@ def create_arm_packet(shoulder_pwm, wristright_pwm, wristleft_pwm, claw_pwm, gan
 def send_packet(packet):
     """Send a packet to the rover.""" 
     rover_socket.sendto(packet.encode('utf-8'), (ROVER_IP, ROVER_PORT))
-    print(f"Sent packet: {packet}")
+    print(f"{packet}")
 
 def apply_deadzone(value):
     """Apply a deadzone to joystick input.""" 
@@ -93,14 +93,14 @@ def get_pwm_arm_input(joystick=None):
 
     if joystick:
         if joystick.get_button(0): 
-            claw_pwm = 148  # X Opens claw
+            claw_pwm = 148  # A Opens claw
         elif joystick.get_button(1): 
-            claw_pwm = 108  # O Closes claw
+            claw_pwm = 108  # B Closes claw
 
         if joystick.get_button(2):
-            shoulder_pwm = 148  #  shoulder moves clockwise
+            elbow_pwm = 148  #  X button moves elbow up
         elif joystick.get_button(3):
-            shoulder_pwm = 108  #  shoulder moves anticlockwise
+            elbow_pwm = 108  #  Y button moves elbow down
 
         hat = joystick.get_hat(0)  # Get Direction pad input
         if hat == (0, 1):  # UP direction on Direction Pad, moves gantry up
@@ -116,8 +116,8 @@ def get_pwm_arm_input(joystick=None):
             wristright_pwm = 148  #  claw spins clockwise
             wristleft_pwm = 148
 
-        gantry_pwm = 148 if joystick.get_axis(3) < -DEADZONE else 108 if joystick.get_axis(3) > DEADZONE else 128 #gantry up/down
-        elbow_pwm = 108 if joystick.get_axis(2) < -DEADZONE else 148 if joystick.get_axis(2) > DEADZONE else 128  #elbow moves up/down
+        gantry_pwm = 148 if joystick.get_axis(3) < -DEADZONE else 108 if joystick.get_axis(3) > DEADZONE else 128 #gantry up/down on y axis of joystick
+        shoulder_pwm = 108 if joystick.get_axis(2) < -DEADZONE else 148 if joystick.get_axis(2) > DEADZONE else 128  # shoulder moves clockwise/anticlockwise on x axis of joystick
 
     return shoulder_pwm, wristright_pwm, wristleft_pwm, claw_pwm, gantry_pwm, elbow_pwm
 

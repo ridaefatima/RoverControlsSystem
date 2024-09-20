@@ -4,7 +4,7 @@ import pygame
 DEADZONE = 0.1
 
 # Rover details
-ROVER_IP = '192.168.1.100'  # Replace with the actual IP address of rover
+ROVER_IP = ''  # Replace with the actual IP address of rover  192.168.1.100
 ROVER_PORT = 12345  # Replace with the actual PORT of rover
 
 # Initialize socket
