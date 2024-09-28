@@ -2,7 +2,7 @@
 
 submission for first training module; functional system for rover.
 
-This is the README file for task 1 (Control System Task):
+This is the README file for task 1 and 2 (Control System Task and UI):
 
 left joystick: controls drive packets sent (controls forward, reverse, left , and right motions at a speed of 0 for reverse 128 for neutral and 148 for forward)
 
@@ -20,4 +20,8 @@ In the Direction pad, the DOWN movement moves claw downward by wrist left and ri
 
 In the Direction pad, the LEFT movement moves spins the claw anticlockwise by spinning wrist left and right in same direction
 
-In the Direction pad, the RIGHT movement moves spins the claw clockwise by spinning wrist left and right in same direction
+In the Direction pad, the RIGHT movement moves spins the claw clockwise by spinning wrist left and right in same direction.
+
+ReadMe for Task A:
+
+I approached this UI by connecting websockets to a keyboard input based python file which had the same outputs as task A. Note that the file was to test if the code works, and was not a good representation of my control system task. Upon confirming that the websocket connection worked, I incorporated the use of blender and three.js in my ui design to display a 3D model of the rover. The packets are displayed on the ui in real time in a user friendly manner through a split terminal at the bottom of the page.
