@@ -25,3 +25,5 @@ In the Direction pad, the RIGHT movement moves spins the claw clockwise by spinn
 ReadMe for Task A:
 
 I approached this UI by connecting websockets to a keyboard input based python file which had the same outputs as task A. Note that the file was to test if the code works, and was not a good representation of my control system task. Upon confirming that the websocket connection worked, I incorporated the use of blender and three.js in my ui design to display a 3D model of the rover. The packets are displayed on the ui in real time in a user friendly manner through a split terminal at the bottom of the page.
+
+im cooked
