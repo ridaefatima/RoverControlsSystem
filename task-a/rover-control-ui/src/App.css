@@ -1,0 +1,64 @@
+.App {
+  text-align: center;
+  height: 100vh;
+  color: white; 
+}
+
+.error {
+  color: red;
+}
+
+.packets {
+  margin: 0; 
+  padding: 10px; 
+  border: solid; 
+  border-radius: 5px;
+}
+
+.robot-state {
+  margin: 0; 
+  padding: 10px; 
+  background: #f8f8f8;
+  border: solid; 
+  border-radius: 5px;
+}
+
+
+.flex-container {
+  display: flex;
+  justify-content: space-around;
+  padding: 20px;
+  height: 400px; 
+}
+
+.flex-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 45%; 
+  flex-grow: 1; 
+}
+
+.scene-container {
+  flex-grow: 1; 
+  max-height: 200px; /* Limit height of the scene */
+  width: 70%; /* Full width */
+  overflow: hidden; /* Prevent overflow */
+}
+
+.scroll-container {
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  width: 80%;
+  height: 200px;
+  overflow-y: auto; /* Show vertical scrollbar only */
+  overflow-x: hidden; /* Hide horizontal scrollbar */
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
+}
+
+
+.scroll-container::-webkit-scrollbar {
+  display: none;
+}
